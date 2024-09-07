@@ -4,8 +4,6 @@
 
 #define TRUE 1
 #define FALSE 0
-#define NOT_DETECTED "NOT DETECTED"
-
 struct Card
 {
     int rank;
@@ -58,9 +56,28 @@ int is_pattern_valid(const char *combination)
     return is_valid;
 }
 
-// struct Card* convert_combo_to_cards(const char *combination)
-// {
-// }
+struct Card *convert_combination_to_cards(const char *combination)
+{
+    struct Card *cards = malloc(7 * sizeof(struct Card));
+    int card_idx = 0;
+
+    for (int i = 0; i < 21; i += 3)
+    {
+        char rank_number[3];
+        rank_number[0] = combination[i];
+        rank_number[1] = combination[i + 1];
+        rank_number[2] = '\0';
+
+        char suite = combination[i + 2];
+
+        cards[card_idx].rank = atoi(rank_number);
+        cards[card_idx].suite = suite;
+
+        card_idx += 1;
+    }
+
+    return cards;
+}
 
 void calculate_poker_rank(char *combination)
 {
@@ -69,12 +86,15 @@ void calculate_poker_rank(char *combination)
         printf("The pattern %s is not valid!", combination);
         return;
     }
-    
+
+    struct Card *cards = convert_combination_to_cards(combination);    
     /* the rest goes here */
 }
 
 int main()
 {
     printf("POKER RANKING! \n");
+    calculate_poker_rank("14H13H12H11H10H03D02S");
+
     return 0;
 }
