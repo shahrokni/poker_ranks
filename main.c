@@ -7,7 +7,7 @@
 struct Card
 {
     int rank;
-    char suite;
+    char suit;
 };
 
 int is_pattern_valid(const char *combination)
@@ -71,7 +71,7 @@ struct Card *convert_combination_to_cards(const char *combination)
         char suite = combination[i + 2];
 
         cards[card_idx].rank = atoi(rank_number);
-        cards[card_idx].suite = suite;
+        cards[card_idx].suit = suite;
 
         card_idx += 1;
     }
@@ -79,22 +79,72 @@ struct Card *convert_combination_to_cards(const char *combination)
     return cards;
 }
 
+int is_royal_flush(const struct Card *cards)
+{
+    /*
+        Royal flush means 5 cards of the same suite from 10 to ace
+        EXAMPLE: ACE, KING, QUEEN, JACK, and 10 of spades
+        If the total_score is 10 + 11 + 12 + 13 + 14 = 60 and no iterated card is less than 10,
+        we can assert royal flush exists
+     */
+
+    /* 0 > S 1 > H 2 > C 3 > D */
+    int scores[4] = {0, 0, 0, 0};
+
+    for (int j = 0; j < 7; j += 1)
+    {
+        struct Card card = cards[j];
+        if (card.rank < 10)
+            continue;
+
+        int score_index = 0;
+
+        if (card.suit == 'H')
+            score_index = 1;
+        else if (card.suit == 'C')
+            score_index = 2;
+        else if (card.suit == 'D')
+            score_index = 3;
+
+        scores[score_index] += card.rank;
+    }
+
+    for (int i = 0; i < 4; i += 1)
+    {
+        if (scores[i] == 60)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
 void calculate_poker_rank(char *combination)
 {
     if (!is_pattern_valid(combination))
     {
-        printf("The pattern %s is not valid!", combination);
+        printf("The pattern %s is not valid! \n", combination);
         return;
     }
 
-    struct Card *cards = convert_combination_to_cards(combination);    
-    /* the rest goes here */
+    struct Card *cards = convert_combination_to_cards(combination);
+
+    /* ROYAL FLUSH CHECK */
+    if (is_royal_flush(cards))
+    {
+        printf("ROYAL FLUSH WAS FOUND: %s \n", combination);
+    }
 }
 
 int main()
 {
     printf("POKER RANKING! \n");
+    /* TEST ROYAL FLUSH */
     calculate_poker_rank("14H13H12H11H10H03D02S");
+    calculate_poker_rank("14H12H13H10H11H03D02S");
+    calculate_poker_rank("03D14H12H13H10H02S11H");
+
+    /* TEST STRAIGHT FLUSH */
+    calculate_poker_rank("08H07H06H05H04H03D02S");
 
     return 0;
 }
