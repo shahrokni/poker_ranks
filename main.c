@@ -211,6 +211,40 @@ short is_four_kind(const struct Card *cards)
     return FALSE;
 }
 
+short is_full_house(const struct Card *cards)
+{
+    /*
+        Here we need to find 3 of a kind and a pair
+        We use a bucket to count the cards per rank
+        The rule is that four of a kind can't be split into smaller groups.
+        Thus, if you have four cards of the same rank,
+        you can't consider part of it as a three of a kind and another part as a pair.      
+     */
+    short bucket[13] = {0};
+
+    for (short i = 0; i < 7; i += 1)
+    {
+        short bucket_index = cards[i].rank - 2;
+        bucket[bucket_index] += 1;
+    }
+
+    short has_3_kind = FALSE;
+    short has_pair = FALSE;
+
+    for (short i = 0; i < 13; i += 1)
+    {
+        if(!has_3_kind)
+            has_3_kind = bucket[i] == 3;
+        if(!has_pair)
+            has_pair = bucket[i] == 2;
+
+        if (has_3_kind && has_pair)
+            return TRUE;
+    }  
+
+    return FALSE;
+}
+
 void calculate_poker_rank(char *id, char *combination)
 {
     if (!is_pattern_valid(combination))
@@ -222,7 +256,7 @@ void calculate_poker_rank(char *id, char *combination)
     struct Card *cards = convert_combination_to_cards(combination);
 
     drw_line();
-    printf("%s is being checked ... \n",combination);
+    printf("%s is being checked ... \n", combination);
 
     /* ROYAL FLUSH CHECK */
     if (is_royal_flush(cards))
@@ -246,8 +280,15 @@ void calculate_poker_rank(char *id, char *combination)
 
         return;
     }
+    else if (is_full_house(cards))
+    {
+        printf("%s > FULL HOUSE WAS FOUND: %s \n", id, combination);
+        drw_line();
 
-    printf("No pattern was found \n");
+        return;
+    }
+
+    printf("%s > No pattern was found \n", id);
     drw_line();
 }
 
@@ -271,7 +312,11 @@ int main()
     calculate_poker_rank("9", "05S05D05C05H14D12S12D");
     calculate_poker_rank("10", "12S05D12H03D12C02D12D");
     calculate_poker_rank("11", "02H03H04H13S13H13C13D");
-    calculate_poker_rank("11", "02S02H10D11D12D02C02D");
+    calculate_poker_rank("12", "02S02H10D11D12D02C02D");
+
+    /* TEST FULL HOUSE */
+    calculate_poker_rank("13", "13H13D13S05H05C02D02C");
+    calculate_poker_rank("13", "02S02D02H03S03D03H12D");
 
     return 0;
 }
