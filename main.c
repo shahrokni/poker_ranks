@@ -4,6 +4,7 @@
 
 #define TRUE 1
 #define FALSE 0
+
 struct Card
 {
     int rank;
@@ -118,6 +119,72 @@ int is_royal_flush(const struct Card *cards)
     return FALSE;
 }
 
+int is_straight_flush(const struct Card *cards)
+{
+    int spades_bucket[13] = {0};
+    int consecutive_spades_count = 0;
+
+    int hearts_bucket[13] = {0};
+    int consecutive_hearts_count = 0;
+
+    int clubs_bucket[13] = {0};
+    int consecutive_clubs_count = 0;
+
+    int diamonds_bucket[13] = {0};
+    int consecutive_diamonds_count = 0;
+
+    for(int i=0;i<7;i+=1)
+    {
+        int rank = cards[i].rank;
+        char suit = cards[i].suit;
+
+        if(suit == 'S')
+            spades_bucket[rank-2] = 1;
+        else if(suit == 'H')
+            hearts_bucket[rank-2] = 1;
+        else if(suit == 'C')
+            clubs_bucket[rank-2] = 1;
+        else
+            diamonds_bucket[rank-2] = 1;
+    }
+
+    for(int i=0;i<14;i+=1)
+    {
+        if(!spades_bucket[i])
+            consecutive_spades_count = 0;
+        else
+            consecutive_spades_count +=1;
+        if(!hearts_bucket[i])
+            consecutive_hearts_count = 0;
+        else
+            consecutive_hearts_count+=1;
+        if(!clubs_bucket[i])
+            consecutive_clubs_count = 0;
+        else
+            consecutive_clubs_count+=1;
+        if(!diamonds_bucket[i])
+            consecutive_diamonds_count = 0;
+        else
+            consecutive_diamonds_count+=1;
+
+        int any =
+        consecutive_spades_count == 5 ||
+        consecutive_hearts_count == 5 ||
+        consecutive_clubs_count == 5 ||
+        consecutive_diamonds_count == 5;
+
+        if(any)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+int is_four_kind(const struct Card *cards)
+{
+   
+}
+
 void calculate_poker_rank(char *combination)
 {
     if (!is_pattern_valid(combination))
@@ -132,12 +199,18 @@ void calculate_poker_rank(char *combination)
     if (is_royal_flush(cards))
     {
         printf("ROYAL FLUSH WAS FOUND: %s \n", combination);
+        return;
+    } else if(is_straight_flush(cards))
+    {
+        printf("STRAIGHT FLUSH WAS FOUND: %s \n",combination);
+        return;
     }
 }
 
 int main()
 {
     printf("POKER RANKING! \n");
+    printf("-------------- \n");
     /* TEST ROYAL FLUSH */
     calculate_poker_rank("14H13H12H11H10H03D02S");
     calculate_poker_rank("14H12H13H10H11H03D02S");
@@ -145,6 +218,10 @@ int main()
 
     /* TEST STRAIGHT FLUSH */
     calculate_poker_rank("08H07H06H05H04H03D02S");
+    calculate_poker_rank("03D12S04D05D06D11C07D");
+    calculate_poker_rank("04S02D02S03S14D06S05S");
+    calculate_poker_rank("09S10S11S12S13S04D05D");
+    calculate_poker_rank("08H07H06H05H04D03D02S"); // NOT!
 
     return 0;
 }
