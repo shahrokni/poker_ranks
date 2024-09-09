@@ -20,10 +20,10 @@
 #define TP "TWO PARIS"
 #define P "PAIR"
 #define HG "HIGH CARD"
-#define SPADES_CHAR '\u2660'
-#define HEARTS_CHAR '\u2665'
-#define CLUBS_CHAR  '\u2663'
-#define DIAMONDS_CHAR '\u2666'
+#define SPADES_SYMBOL "♠"
+#define HEARTS_SYMBOL "♥"
+#define CLUBS_SYMBOL "♣"
+#define DIAMONDS_SYMBOL "♦"
 
 struct Card
 {
@@ -479,15 +479,71 @@ char **generate_random_combinations(short count_combinations)
     return combinations;
 }
 
+char* get_suit_symbol(char suit)
+{
+    if(suit == 'S')
+        return SPADES_SYMBOL;
+    else if(suit == 'H')
+        return HEARTS_SYMBOL;
+    else if(suit == 'C')
+        return CLUBS_SYMBOL;
+    else
+        return DIAMONDS_SYMBOL;
+}
+
+void beautify_combination(const char *combination)
+{       
+    for (short i = 0; i < 21; i += 3)
+    {
+        char rank_char_arr[3] = {combination[i], combination[i + 1], '\0'};        
+        short rank = atoi(rank_char_arr);
+
+        if(rank<10)
+        {
+            char rank_str[2];
+            sprintf(rank_str,"%d",rank);
+            printf(" %s%s ",rank_str,get_suit_symbol(combination[i + 2]));
+        }
+        else if(rank == 10)
+        {
+            printf(" 10%s ",get_suit_symbol(combination[i + 2]));
+        }
+        else
+        {
+            char symbol;
+            switch (rank)
+            {
+            case 11:
+                symbol = 'J';
+                break;
+            case 12:
+                symbol = 'Q';
+                break;
+            case 13:
+                symbol = 'K';
+                break;
+            case 14:
+                symbol = 'A';
+                break;            
+            default:
+                break;
+            }
+            printf(" %c%s ",symbol,get_suit_symbol(combination[i + 2]));
+        }
+    }
+    printf("\n");
+}
+
 int main()
 {
-    char **combos = generate_random_combinations(1000);
+    char **combos = generate_random_combinations(10000);
 
-    for (short i = 0; i < 1000; i += 1)
+    for (short i = 0; i < 10000; i += 1)
     {
-        char id[1000];
-        sprintf(id, "%d", i);
-        printf("%s => %s \n", combos[i], calculate_poker_rank(id, combos[i]));
+        char id[10000];       
+        printf(" %s \n\n", calculate_poker_rank(id, combos[i]));
+        beautify_combination(combos[i]);
+        printf("....................\n\n"); 
     }
 
     return 0;
