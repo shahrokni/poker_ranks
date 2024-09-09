@@ -3,8 +3,12 @@
 #include <stdlib.h>
 #include <time.h>
 
+/* APPLICATION */
 #define TRUE 1
 #define FALSE 0
+#define MALLOC_FAILURE_EXCEPTION_MESSAGE "MALLOC_FAILURE_EXCEPTION"
+
+/* POKER */
 #define NVP "NOT A VALID PATTERN"
 #define RF "ROYAL FLUSH"
 #define SF "STRAIGHT FLUSH"
@@ -421,9 +425,20 @@ char **generate_random_combinations(short count_combinations)
     */
 
     char **combinations = malloc(count_combinations * sizeof(char *));
+    if(combinations == NULL)
+    {
+        printf(MALLOC_FAILURE_EXCEPTION_MESSAGE);
+        exit(1);
+    }
+
     for (short i = 0; i < count_combinations; i += 1)
     {
         combinations[i] = malloc(22 * sizeof(char));
+        if(combinations[i] == NULL)
+        {
+            printf(MALLOC_FAILURE_EXCEPTION_MESSAGE);
+            exit(1);
+        }
     }
 
     short count_generated_patterns = 0;
@@ -432,6 +447,12 @@ char **generate_random_combinations(short count_combinations)
     short generated_hearts_rank[13] = {0};
     short generated_clubs_rank[13] = {0};
     short generated_diamonds_rank[13] = {0};
+
+    short *all_generated_ranks[] = {generated_spades_rank,
+                                    generated_hearts_rank,
+                                    generated_clubs_rank,
+                                    generated_diamonds_rank};
+
     srand(time(0));
 
     while (count_generated_patterns < count_combinations)
@@ -442,66 +463,25 @@ char **generate_random_combinations(short count_combinations)
             short random_suit = rand() % 4;
             short random_rank = (rand() % 13) + 2;
 
-            if (random_suit == 0)
+            if (!all_generated_ranks[random_suit][random_rank - 2])
             {
-                if (!generated_spades_rank[random_rank - 2])
-                {
-                    generated_spades_rank[random_rank - 2] = 1;
-                    set_card_str(combinations, count_generated_patterns, current_pattern_length, random_rank, random_suit);
-                    current_pattern_length += 3;
-                    continue;
-                }
-                else
-                    continue;
-            }
-            else if (random_suit == 1)
-            {
-                if (!generated_hearts_rank[random_rank - 2])
-                {
-                    generated_hearts_rank[random_rank - 2] = 1;
-                    set_card_str(combinations, count_generated_patterns, current_pattern_length, random_rank, random_suit);
-                    current_pattern_length += 3;
-                    continue;
-                }
-                else
-                    continue;
-            }
-            else if (random_suit == 2)
-            {
-                if (!generated_clubs_rank[random_rank - 2])
-                {
-                    generated_clubs_rank[random_rank - 2] = 1;
-                    set_card_str(combinations, count_generated_patterns, current_pattern_length, random_rank, random_suit);
-                    current_pattern_length += 3;
-                    continue;
-                }
-                else
-                    continue;
+                all_generated_ranks[random_suit][random_rank - 2] = 1;
+                set_card_str(combinations,
+                             count_generated_patterns,
+                             current_pattern_length,
+                             random_rank,
+                             random_suit);
+                current_pattern_length += 3;
             }
             else
-            {
-                if (!generated_diamonds_rank[random_rank - 2])
-                {
-                    generated_diamonds_rank[random_rank - 2] = 1;
-                    set_card_str(combinations, count_generated_patterns, current_pattern_length, random_rank, random_suit);
-                    current_pattern_length += 3;
-                    continue;
-                }
-                else
-                    continue;
-            }
+                continue;
         }
         combinations[count_generated_patterns][21] = '\0';
-
         current_pattern_length = 0;
         count_generated_patterns += 1;
-        for (short i = 0; i < 13; i += 1)
-        {
-            generated_spades_rank[i] = 0;
-            generated_hearts_rank[i] = 0;
-            generated_clubs_rank[i] = 0;
-            generated_diamonds_rank[i] = 0;
-        }
+        for (short i = 0; i < 4; i += 1)        
+            for (short j = 0; j < 13; j += 1)            
+                all_generated_ranks[i][j] = 0;        
     }
 
     return combinations;
@@ -509,11 +489,11 @@ char **generate_random_combinations(short count_combinations)
 
 int main()
 {
-    char **combos = generate_random_combinations(30);
+    char **combos = generate_random_combinations(1000);
 
-    for (short i = 0; i < 30; i += 1)
+    for (short i = 0; i < 1000; i += 1)
     {
-        char id[31];
+        char id[1000];
         sprintf(id, "%d", i);
         printf("%s => %s \n", combos[i], calculate_poker_rank(id, combos[i]));
     }
