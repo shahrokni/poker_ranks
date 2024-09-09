@@ -20,16 +20,16 @@
 #define TP "TWO PARIS"
 #define P "PAIR"
 #define HG "HIGH CARD"
+#define SPADES_CHAR '\u2660'
+#define HEARTS_CHAR '\u2665'
+#define CLUBS_CHAR  '\u2663'
+#define DIAMONDS_CHAR '\u2666'
 
 struct Card
 {
     short rank;
     char suit;
 };
-void drw_line()
-{
-    printf("............................... \n");
-}
 
 short is_pattern_valid(const char *combination)
 {
@@ -187,13 +187,11 @@ short is_straight_flush(const struct Card *cards)
         else
             consecutive_diamonds_count += 1;
 
-        short any =
+        if (
             consecutive_spades_count == 5 ||
             consecutive_hearts_count == 5 ||
             consecutive_clubs_count == 5 ||
-            consecutive_diamonds_count == 5;
-
-        if (any)
+            consecutive_diamonds_count == 5)
             return TRUE;
     }
 
@@ -231,7 +229,7 @@ short is_full_house(const struct Card *cards)
 {
     /*
         Here we need to find 3 of a kind and a pair
-        We use a bucket to count the cards per rank
+        We use a bucket of the ranks to count the cards per rank
         The rule is that four of a kind can't be split into smaller groups.
         Thus, if you have four cards of the same rank,
         you can't consider part of it as a three of a kind and another part as a pair.
@@ -279,7 +277,10 @@ short is_flush(const struct Card *cards)
         else
             suits_count[3] += 1;
 
-        if (suits_count[0] == 5 || suits_count[1] == 5 || suits_count[2] == 5 || suits_count[3] == 5)
+        if (suits_count[0] == 5 ||
+            suits_count[1] == 5 ||
+            suits_count[2] == 5 ||
+            suits_count[3] == 5)
             return TRUE;
     }
 
@@ -292,9 +293,7 @@ short is_straight(const struct Card *cards)
     short count_consecutive_ranks = 0;
 
     for (short i = 0; i < 7; i += 1)
-    {
         ranks[cards[i].rank - 2] = 1;
-    }
 
     for (short i = 0; i < 13; i += 1)
     {
@@ -315,15 +314,11 @@ short is_three_kind(const struct Card *cards)
     short ranks[13] = {0};
 
     for (short i = 0; i < 7; i += 1)
-    {
         ranks[cards[i].rank - 2] += 1;
-    }
 
     for (short i = 0; i < 13; i += 1)
-    {
         if (ranks[i] == 3)
             return TRUE;
-    }
 
     return FALSE;
 }
@@ -333,12 +328,9 @@ short is_x_pairs(const struct Card *cards, const short expected_pair)
     short ranks[13] = {0};
 
     for (short i = 0; i < 7; i += 1)
-    {
         ranks[cards[i].rank - 2] += 1;
-    }
 
     short count_pair = 0;
-
     for (short i = 0; i < 13; i += 1)
     {
         if (ranks[i] == 2)
@@ -425,7 +417,7 @@ char **generate_random_combinations(short count_combinations)
     */
 
     char **combinations = malloc(count_combinations * sizeof(char *));
-    if(combinations == NULL)
+    if (combinations == NULL)
     {
         printf(MALLOC_FAILURE_EXCEPTION_MESSAGE);
         exit(1);
@@ -434,7 +426,7 @@ char **generate_random_combinations(short count_combinations)
     for (short i = 0; i < count_combinations; i += 1)
     {
         combinations[i] = malloc(22 * sizeof(char));
-        if(combinations[i] == NULL)
+        if (combinations[i] == NULL)
         {
             printf(MALLOC_FAILURE_EXCEPTION_MESSAGE);
             exit(1);
@@ -479,9 +471,9 @@ char **generate_random_combinations(short count_combinations)
         combinations[count_generated_patterns][21] = '\0';
         current_pattern_length = 0;
         count_generated_patterns += 1;
-        for (short i = 0; i < 4; i += 1)        
-            for (short j = 0; j < 13; j += 1)            
-                all_generated_ranks[i][j] = 0;        
+        for (short i = 0; i < 4; i += 1)
+            for (short j = 0; j < 13; j += 1)
+                all_generated_ranks[i][j] = 0;
     }
 
     return combinations;
