@@ -3,6 +3,8 @@
 **Poker Rank** is a simple C application for detecting poker hand rankings.
 The application was primarily developed for educational purposes, providing the author with an opportunity to refresh and improve their C programming skills after a long hiatus. Avid poker players and developers interested in creating their own games are encouraged to take advantage of this repository.
 
+![DEMO](https://github.com/shahrokni/poker_ranks/blob/master/demo/demo-1.png)
+
 # What are Poker Hand Rankings?
 
 In a standard Poker game (Texas Hold'em), each player receives two cards, known as hole cards. There are also five community cards that are gradually placed on the table. The combination of the hole cards and community cards (Five cards in the aggregate) can form any of the following **hands**, ranging from a **Royal Flush**, the highest-ranking hand, to a **High Card**, the lowest.
