@@ -536,11 +536,11 @@ void beautify_combination(const char *combination)
 
 int main()
 {
-    char **combos = generate_random_combinations(10000);
+    char **combos = generate_random_combinations(20);
 
-    for (short i = 0; i < 10000; i += 1)
-    {
-        char id[10000];       
+    for (short i = 0; i < 20; i += 1)
+    {        
+        char id[20];       
         printf(" %s \n\n", calculate_poker_rank(id, combos[i]));
         beautify_combination(combos[i]);
         printf("....................\n\n"); 
