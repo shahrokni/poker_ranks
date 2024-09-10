@@ -57,3 +57,9 @@ The **generate_random_combinations** function generates random hands, which are 
 - Build the app using **gcc -o main main.c**
 - Run ./main
 - Enjoy!
+
+# Open tasks
+
+- Fix: Releasing allocated memory to avoid memory leakage
+- Refactor: Separation of the Poker related structures
+- Feat: Probability feature
