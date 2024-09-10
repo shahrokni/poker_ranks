@@ -38,14 +38,14 @@ A standard deck of cards consists of 52 cards, divided into four suits: Spades �
 
 The Hand Rank Detector is a simple script developed in the C programming language. Its main function takes a string (an array of characters) representing the five community cards and two hole cards. The string is always 21 characters long and can be divided into seven groups, each representing a card. For example: 03D08D13H06H10D02D12C.
 
-- S => Spades
-- H => Hearts
-- C => Clubs
-- D => Diamonds
-- 11 => Jack
-- 12 => Queen
-- 13 => King
-- 14 => Ace
+- S => Spades ♠
+- H => Hearts ♥
+- C => Clubs ♣
+- D => Diamonds ♦
+- 11 => Jack => **J**
+- 12 => Queen => **Q**
+- 13 => King => **K**
+- 14 => Ace => **A**
 
 The script first validates the card combination. If the combination is valid, it attempts to find a matching hand in a top-down approach, returning the first match it finds.
 
