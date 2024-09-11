@@ -9,21 +9,25 @@
 #define MALLOC_FAILURE_EXCEPTION_MESSAGE "MALLOC_FAILURE_EXCEPTION"
 
 /* POKER */
-#define NVP "NOT A VALID PATTERN"
-#define RF "ROYAL FLUSH"
-#define SF "STRAIGHT FLUSH"
-#define FOK "FOUR OF A KIND"
-#define FH "FULL HOUSE"
-#define F "FLUSH"
-#define S "STRAIGHT"
-#define TOK "THREE OF A KIND"
-#define TP "TWO PARIS"
-#define P "PAIR"
-#define HG "HIGH CARD"
 #define SPADES_SYMBOL "♠"
 #define HEARTS_SYMBOL "♥"
 #define CLUBS_SYMBOL "♣"
 #define DIAMONDS_SYMBOL "♦"
+
+enum Hands
+{
+    NVP,
+    RF,
+    SF,
+    FOK,
+    FH,
+    F,
+    S,
+    TOK,
+    TP,
+    P,
+    HG
+};
 
 struct Card
 {
@@ -343,7 +347,7 @@ short is_x_pairs(const struct Card *cards, const short expected_pair)
     return FALSE;
 }
 
-char *calculate_poker_rank(char *id, char *combination)
+enum Hands calculate_poker_rank(char *id, char *combination)
 {
     if (!is_pattern_valid(combination))
     {
@@ -352,8 +356,8 @@ char *calculate_poker_rank(char *id, char *combination)
     }
 
     struct Card *cards = convert_combination_to_cards(combination);
-    char *result;
-    
+    enum Hands result;
+
     if (is_royal_flush(cards))
     {
         result = RF;
@@ -397,6 +401,37 @@ char *calculate_poker_rank(char *id, char *combination)
 
     free(cards);
     return result;
+}
+
+const char *convert_hand_value_to_hand_name(enum Hands hand)
+{
+
+    switch (hand)
+    {
+    case RF:
+        return "ROYAL FLUSH";
+    case SF:
+        return "STRAIGHT FLUSH";
+    case FOK:
+        return "4 OF A KIND";
+
+    case FH:
+        return "FULL HOUSE";
+    case F:
+        return "FLUSH";
+    case S:
+        return "STRAIGHT";
+    case TOK:
+        return "3 OF A KIND";
+    case TP:
+        return "2 PAIRS";
+    case P:
+        return "PAIR";
+    case HG:
+        return "HIGH CARD";
+    default:
+        return "";
+    }
 }
 
 void set_card_str(char **combinations, short combo_index, short current_pattern_len, short rank, short suit)
@@ -556,13 +591,12 @@ int main()
 
     for (short i = 0; i < 20; i += 1)
     {
-        char id[20];
-        printf(" %s \n\n", calculate_poker_rank(id, combos[i]));
+        char id[20];        
+        printf(" %s \n\n", convert_hand_value_to_hand_name(calculate_poker_rank(id, combos[i])));
         beautify_combination(combos[i]);
-        printf("....................\n\n");
+        printf("....................\n\n");        
     }
 
     clean_generated_random_combinations(combos, combinations_count);
-
     return 0;
 }
