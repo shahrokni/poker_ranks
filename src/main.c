@@ -352,46 +352,51 @@ char *calculate_poker_rank(char *id, char *combination)
     }
 
     struct Card *cards = convert_combination_to_cards(combination);
-
-    /* ROYAL FLUSH CHECK */
+    char *result;
+    
     if (is_royal_flush(cards))
     {
-        return RF;
+        result = RF;
     }
     else if (is_straight_flush(cards))
     {
-        return SF;
+        result = SF;
     }
     else if (is_four_kind(cards))
     {
-        return FOK;
+        result = FOK;
     }
     else if (is_full_house(cards))
     {
-        return FH;
+        result = FH;
     }
     else if (is_flush(cards))
     {
-        return F;
+        result = F;
     }
     else if (is_straight(cards))
     {
-        return S;
+        result = S;
     }
     else if (is_three_kind(cards))
     {
-        return TOK;
+        result = TOK;
     }
     else if (is_x_pairs(cards, 2))
     {
-        return TP;
+        result = TP;
     }
     else if (is_x_pairs(cards, 1))
     {
-        return P;
+        result = P;
+    }
+    else
+    {
+        result = HG;
     }
 
-    return HG;
+    free(cards);
+    return result;
 }
 
 void set_card_str(char **combinations, short combo_index, short current_pattern_len, short rank, short suit)
@@ -479,34 +484,44 @@ char **generate_random_combinations(short count_combinations)
     return combinations;
 }
 
-char* get_suit_symbol(char suit)
+void clean_generated_random_combinations(char **combinations, short combos_length)
 {
-    if(suit == 'S')
+    for (short i = 0; i < combos_length; i += 1)
+    {
+        free(combinations[i]);
+    }
+
+    free(combinations);
+}
+
+char *get_suit_symbol(char suit)
+{
+    if (suit == 'S')
         return SPADES_SYMBOL;
-    else if(suit == 'H')
+    else if (suit == 'H')
         return HEARTS_SYMBOL;
-    else if(suit == 'C')
+    else if (suit == 'C')
         return CLUBS_SYMBOL;
     else
         return DIAMONDS_SYMBOL;
 }
 
 void beautify_combination(const char *combination)
-{       
+{
     for (short i = 0; i < 21; i += 3)
     {
-        char rank_char_arr[3] = {combination[i], combination[i + 1], '\0'};        
+        char rank_char_arr[3] = {combination[i], combination[i + 1], '\0'};
         short rank = atoi(rank_char_arr);
 
-        if(rank<10)
+        if (rank < 10)
         {
             char rank_str[2];
-            sprintf(rank_str,"%d",rank);
-            printf(" %s%s ",rank_str,get_suit_symbol(combination[i + 2]));
+            sprintf(rank_str, "%d", rank);
+            printf(" %s%s ", rank_str, get_suit_symbol(combination[i + 2]));
         }
-        else if(rank == 10)
+        else if (rank == 10)
         {
-            printf(" 10%s ",get_suit_symbol(combination[i + 2]));
+            printf(" 10%s ", get_suit_symbol(combination[i + 2]));
         }
         else
         {
@@ -524,11 +539,11 @@ void beautify_combination(const char *combination)
                 break;
             case 14:
                 symbol = 'A';
-                break;            
+                break;
             default:
                 break;
             }
-            printf(" %c%s ",symbol,get_suit_symbol(combination[i + 2]));
+            printf(" %c%s ", symbol, get_suit_symbol(combination[i + 2]));
         }
     }
     printf("\n");
@@ -536,15 +551,18 @@ void beautify_combination(const char *combination)
 
 int main()
 {
-    char **combos = generate_random_combinations(20);
+    short combinations_count = 20;
+    char **combos = generate_random_combinations(combinations_count);
 
     for (short i = 0; i < 20; i += 1)
-    {        
-        char id[20];       
+    {
+        char id[20];
         printf(" %s \n\n", calculate_poker_rank(id, combos[i]));
         beautify_combination(combos[i]);
-        printf("....................\n\n"); 
+        printf("....................\n\n");
     }
+
+    clean_generated_random_combinations(combos, combinations_count);
 
     return 0;
 }
