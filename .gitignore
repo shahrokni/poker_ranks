@@ -1,0 +1,24 @@
+# Ignore executable files
+main
+
+# Ignore build directories
+/build/
+/bin/
+/obj/
+/out/
+
+# Ignore object files
+*.o
+
+# Ignore compiled dynamic libraries
+*.so
+*.dll
+*.dylib
+
+# Ignore compiled static libraries
+*.a
+*.lib
+
+# Ignore debug and release files
+*.log
+*.dbg
